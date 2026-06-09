@@ -1,0 +1,6 @@
+[submodule "submodules/Groq_API_Proxy_Service"]
+	path = submodules/Groq_API_Proxy_Service
+	url = https://github.com/AliBalash/Groq_API_Proxy_Service.git
+[submodule "submodules/kokoro"]
+	path = submodules/kokoro
+	url = https://github.com/hexgrad/kokoro.git
