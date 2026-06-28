@@ -1,5 +1,7 @@
 # Section Title
 
+<!-- Save each batch under data/parts/part_xx/sentences.md -->
+
 **German sentence in its neutral form.**
 ترجمه یا جمله راهنمای فارسی
 

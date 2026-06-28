@@ -8,6 +8,14 @@ from pathlib import Path
 from .models import SentenceEntry
 
 
+STUDY_LOUD_AUDIO_FILTER = (
+    "highpass=f=110,"
+    "acompressor=threshold=-26dB:ratio=4.5:attack=8:release=120:makeup=10,"
+    "loudnorm=I=-9:TP=-1.0:LRA=5,"
+    "alimiter=limit=0.95"
+)
+
+
 def ensure_ffmpeg() -> None:
     try:
         subprocess.run(["ffmpeg", "-version"], check=True, capture_output=True, text=True)
@@ -66,19 +74,33 @@ def write_wave_bundle(
             out_wav.writeframes(silence_bytes)
 
 
-def convert_wav_to_mp3(wav_path: Path, mp3_path: Path) -> None:
+def convert_wav_to_mp3(
+    wav_path: Path,
+    mp3_path: Path,
+    *,
+    volume_gain_db: float = 0.0,
+    audio_filter: str | None = None,
+) -> None:
     mp3_path.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         "ffmpeg",
         "-y",
         "-i",
         str(wav_path),
+    ]
+    filter_chain = audio_filter
+    if volume_gain_db:
+        extra = f"volume={volume_gain_db}dB"
+        filter_chain = f"{filter_chain},{extra}" if filter_chain else extra
+    if filter_chain:
+        cmd.extend(["-af", filter_chain])
+    cmd.extend([
         "-codec:a",
         "libmp3lame",
         "-q:a",
         "2",
         str(mp3_path),
-    ]
+    ])
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg conversion failed for {wav_path.name}: {result.stderr[:500]}")

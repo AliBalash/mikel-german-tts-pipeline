@@ -1,7 +1,7 @@
 {
   "defaults": {
     "provider": "gradium",
-    "input": "data/german_learning_sentences.md",
+    "input": "data/parts/part_01/sentences.md",
     "output_root": "artifacts/audio",
     "manifest_name": "manifest.json",
     "language_code": "de-DE"
@@ -12,35 +12,6 @@
       "voice_gender": "male",
       "audio_format": "wav",
       "speech_speed": 0.9
-    },
-    "yourvoic": {
-      "model_name": "aura-prime",
-      "voice_name": "Paul",
-      "voice_gender": "male",
-      "audio_format": "mp3",
-      "speech_speed": 1.0
-    },
-    "groq_proxy": {
-      "base_url": "http://127.0.0.1:18010",
-      "model_name": "canopylabs/orpheus-v1-english",
-      "voice_name": "daniel",
-      "voice_gender": "male",
-      "audio_format": "wav",
-      "speech_speed": 0.86,
-      "speech_directions": "[calm] [clear]"
-    },
-    "azure": {
-      "voice_name": "de-de-Seraphina:DragonHDLatestNeural",
-      "voice_gender": "female",
-      "audio_format": "mp3",
-      "speech_region": "germanywestcentral",
-      "endpoint": "https://germanywestcentral.api.cognitive.microsoft.com/"
-    },
-    "google": {
-      "voice_name": "de-DE-Chirp-HD-O",
-      "voice_gender": "female",
-      "audio_format": "mp3",
-      "credentials_path": "/absolute/path/to/google-service-account.json"
     }
   }
 }

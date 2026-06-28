@@ -93,6 +93,7 @@ def write_manifest(
     entries: Iterable[SentenceEntry],
     manifest_path: Path,
     *,
+    dataset_slug: str | None = None,
     provider_name: str | None = None,
     voice_name: str | None = None,
     file_extension: str | None = None,
@@ -102,6 +103,8 @@ def write_manifest(
     for entry in entries:
         record = asdict(entry)
         record["file_stem"] = entry.stem
+        if dataset_slug:
+            record["dataset_slug"] = dataset_slug
         if provider_name:
             record["provider"] = provider_name
         if voice_name:

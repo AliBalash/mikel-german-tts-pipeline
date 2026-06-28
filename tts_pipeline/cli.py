@@ -11,7 +11,7 @@ from .providers import create_provider
 
 def add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config", default=DEFAULT_CONFIG_PATH, help="Path to JSON config file.")
-    parser.add_argument("--provider", choices=["azure", "google", "groq_proxy", "gradium", "yourvoic"], help="TTS provider.")
+    parser.add_argument("--provider", choices=["gradium"], help="TTS provider.")
     parser.add_argument("--input", help="Source markdown/text file.")
     parser.add_argument("--output-root", help="Base output directory. Provider subfolders are created under this path.")
     parser.add_argument("--output-dir", help="Explicit output directory override.")
@@ -22,6 +22,8 @@ def add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--voice-gender", choices=["female", "male"], help="Fallback gender for auto voice selection.")
     parser.add_argument("--audio-format", help="Friendly format name: mp3, wav, or ogg.")
     parser.add_argument("--limit", type=int, help="Limit synthesis/manifest to the first N sentence items.")
+    parser.add_argument("--section-index", type=int, help="Keep only one parsed section index.")
+    parser.add_argument("--item-number", type=int, help="Keep only one item number within the dataset.")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing audio files.")
 
 
@@ -61,14 +63,26 @@ def command_from_legacy_args(args) -> str:
     return "synthesize"
 
 
+def filter_entries(entries, args):
+    if args.section_index is not None:
+        entries = [entry for entry in entries if entry.section_index == args.section_index]
+    if args.item_number is not None:
+        entries = [entry for entry in entries if entry.item_number == args.item_number]
+    if args.limit:
+        entries = entries[: args.limit]
+    if not entries:
+        raise ValueError("No sentence entries matched the selected filters.")
+    return entries
+
+
 def run_parse(args) -> int:
     resolved = resolve_config(args)
     entries = parse_markdown_sentences(resolved.input_path)
-    if args.limit:
-        entries = entries[: args.limit]
+    entries = filter_entries(entries, args)
     write_manifest(
         entries,
         resolved.manifest_path,
+        dataset_slug=resolved.dataset_slug,
         provider_name=resolved.provider_name,
     )
     print(f"Parsed {len(entries)} entries from {resolved.input_path} and wrote {resolved.manifest_path}")
@@ -86,8 +100,7 @@ def run_list_voices(args) -> int:
 def run_synthesize(args) -> int:
     resolved = resolve_config(args)
     entries = parse_markdown_sentences(resolved.input_path)
-    if args.limit:
-        entries = entries[: args.limit]
+    entries = filter_entries(entries, args)
     provider = create_provider(resolved.provider_name, resolved.provider_settings)
     voice_name, file_extension = provider.synthesize_entries(
         entries,
@@ -101,6 +114,7 @@ def run_synthesize(args) -> int:
     write_manifest(
         entries,
         resolved.manifest_path,
+        dataset_slug=resolved.dataset_slug,
         provider_name=resolved.provider_name,
         voice_name=voice_name,
         file_extension=file_extension,
