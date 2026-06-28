@@ -19,5 +19,3 @@ artifacts/*
 !artifacts/.gitkeep
 
 output_audio/
-
-submodules/Groq_API_Proxy_Service/.env

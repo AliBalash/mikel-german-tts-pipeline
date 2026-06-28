@@ -1,18 +1,10 @@
 from __future__ import annotations
 
-from .azure_speech import AzureSpeechTTSProvider
 from .gradium import GradiumTTSProvider
-from .google_cloud import GoogleCloudTTSProvider
-from .groq_proxy import GroqProxyTTSProvider
-from .yourvoic import YourVoicTTSProvider
 
 
 PROVIDER_REGISTRY = {
-    "azure": AzureSpeechTTSProvider,
     "gradium": GradiumTTSProvider,
-    "google": GoogleCloudTTSProvider,
-    "groq_proxy": GroqProxyTTSProvider,
-    "yourvoic": YourVoicTTSProvider,
 }
 
 
